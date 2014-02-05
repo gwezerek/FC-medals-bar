@@ -332,25 +332,37 @@
 }
 
 /* line 93, ../sass/site.scss */
-.x-axis-label {
+.axis-label {
   font-size: 11px;
   fill: #999999;
 }
 @media (min-width: 680px) {
   /* line 93, ../sass/site.scss */
-  .x-axis-label {
+  .axis-label {
     font-size: 12px;
   }
 }
 
 /* line 101, ../sass/site.scss */
+.tick text {
+  font-size: 11px;
+  fill: #999999;
+}
+@media (min-width: 680px) {
+  /* line 101, ../sass/site.scss */
+  .tick text {
+    font-size: 12px;
+  }
+}
+
+/* line 109, ../sass/site.scss */
 .domain {
   fill: none;
   stroke: #999999;
   stroke-width: 1;
 }
 
-/* line 107, ../sass/site.scss */
+/* line 115, ../sass/site.scss */
 .sources-copy {
   display: block;
   margin-bottom: 5px;
@@ -362,25 +374,80 @@
   line-height: 130%;
 }
 @media (min-width: 400px) {
-  /* line 107, ../sass/site.scss */
+  /* line 115, ../sass/site.scss */
   .sources-copy {
     font-size: 12px;
   }
 }
 
-/* line 121, ../sass/site.scss */
+/* line 129, ../sass/site.scss */
 .tooltip {
   position: absolute;
   font-family: "MuseoSans", Helvetica, Arial, sans-serif;
   padding: 10px;
   font-size: 12px;
   background: floralwhite;
-  border: 1px solid #ff81a0;
+  border: 1px solid #999999;
   pointer-events: none;
   font-weight: 300;
 }
 
-/* line 132, ../sass/site.scss */
+/* line 140, ../sass/site.scss */
 .tooltip-param {
   color: #999999;
+}
+
+/* line 144, ../sass/site.scss */
+.model-line {
+  stroke: #999999;
+  stroke-width: 1;
+  fill: none;
+  stroke-dasharray: 5,5;
+}
+
+/* line 151, ../sass/site.scss */
+.model-line-label {
+  font-size: 11px;
+}
+@media (min-width: 680px) {
+  /* line 151, ../sass/site.scss */
+  .model-line-label {
+    font-size: 12px;
+  }
+}
+
+/* line 158, ../sass/site.scss */
+.dot {
+  stroke: floralwhite;
+}
+
+/* line 162, ../sass/site.scss */
+.magnitude {
+  stroke-width: 2;
+  fill: none;
+}
+
+/* line 167, ../sass/site.scss */
+.over {
+  fill: #ff81a0;
+}
+/* line 169, ../sass/site.scss */
+.over line {
+  stroke: #ff81a0;
+}
+
+/* line 174, ../sass/site.scss */
+.under {
+  fill: #b681ff;
+}
+/* line 176, ../sass/site.scss */
+.under line {
+  stroke: #b681ff;
+}
+
+/* line 181, ../sass/site.scss */
+.dot-label {
+  text-anchor: middle;
+  font-size: 10px;
+  fill: #999999;
 }

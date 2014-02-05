@@ -20,7 +20,7 @@
 <body>
 	<article class="graphic-article">
 		<div class="graphic-container">
-			<div id="chart">
+			<div id="chart"> 
 				<span class="graphic-dek">Which Countries Will Win&nbsp;Big?</span>
 				<span class="graphic-copy">According to the Graettingers' model, the United States will walk away once more with the most overall medals, though it won't come close to last year's record-setting 37 individual awards. China, which only won 11 medals in the last Winter Games, is set to double its haul. Hover over each bar to see individual values for the four parameters the Graettingers modeled.</span>
 			</div>
@@ -30,188 +30,198 @@
 		<!-- D3 LAYOUT -->
 		<script type="text/javascript">
 
-		// Global vars
-		var x, labels, axisLabels;
+			// Accessor functions 
+			var nation = function(d) { return d['Nation']; };
+			var predicted = function(d) { return d['Predicted']; };
+			var actual = function(d) { return d['Actual']; };
 
-		// Config vars
-		var valueLabelWidth = 30; // Space reserved for value labels (right)
-		var barHeight = 30; // Height of one bar
-		var barPadding = 7; // Padding between bars
-		var barLabelWidth = 100; // Space reserved for bar labels
-		var barLabelPadding = 5; // Padding between bar and bar labels (left)
-		var gridLabelHeight = 15; // Space reserved for gridline labels
-		var gridChartOffset = 3; // Space between start of grid and first bar
-		var width = parseInt(d3.select('#chart').style('width'), 10);
+			var margin = {top: 20, right: 20, bottom: 30, left: 40},
+				width = parseInt(d3.select('#chart').style('width'), 10),
+				height = 480 - margin.top - margin.bottom;
 
-		// Formatting
-		var formatCurrency = d3.format("$,");
-		var formatGeo = d3.format(",");
-		var formatBils = d3.format('$.3s');
-		var bilsReplace = function(val) { return formatBils(val).replace(/G/, ' bil.').replace(/T/, ' tril.') };
+			var x = d3.scale.linear()
+				.range([0, width - margin.left - margin.right]);
 
-		// Accessor functions 
-		var barLabel = function(d) { return d['nation']; };
-		var barValue = function(d) { return parseFloat(d['adj_medals']); };
-		var barGeo = function(d) { return formatGeo(d['geog_area']); };
-		var barGDP = function(d) { return formatCurrency(d['gdp_per_cap']); };
-		var barExport = function(d) { return bilsReplace(d['exports']); };
-		var barLat = function(d) { return d['lat_of_capital']; };
-		var height = function(sortedData) { return gridLabelHeight + gridChartOffset + sortedData.length * barHeight; };
+			var y = d3.scale.linear()
+				.range([height, 0]);
 
-		// SVG container element
-		var chart = d3.select('#chart').append("svg")
-			.attr("xmlns","http://www.w3.org/2000/svg")
-            .attr("xmlns","http://www.w3.org/1999/xlink")
-            .attr("version","1.1")
-			.attr("class", "bar-chart")
-			.attr('width', width);
+			var color = d3.scale.category10();
 
-		// DAT DATA		
-		d3.csv('medals.csv', function(data){
+			var xAxis = d3.svg.axis()
+				.scale(x)
+				.ticks(5)
+				.orient("bottom");
 
-			// Sorting
-			var sortedData = data.sort(function(a, b) {
-				return d3.descending(barValue(a), barValue(b));
-			}); 
+			var yAxis = d3.svg.axis()
+				.scale(y)
+				.ticks(5)
+				.orient("left");
 
-			// Set chart height now that we have data
-			chart.attr('height', height(sortedData));
+			var svg = d3.select("#chart").append("svg")
+				.attr("width", width)
+				.attr("height", height + margin.top + margin.bottom)
+			  .append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-			// Scales
-			var yScale = d3.scale.ordinal().domain(d3.range(0, sortedData.length)).rangeBands([0, sortedData.length * barHeight]);
-			var y = function(d, i) { return yScale(i); };
-			var yPad = function(d, i) { return yScale(i) + (barPadding/2); };
-			var yText = function(d, i) { return y(d, i) + yScale.rangeBand() / 2; };
-			x = d3.scale.linear()
-				.domain([0, d3.max(sortedData, barValue)])
-				.range([0, width - barLabelWidth - valueLabelWidth]);
+			d3.tsv("outliers.tsv", function(error, data) {
+			  data.forEach(function(d) {
+				d.Actual = +d.Actual;
+				d.Predicted = +d.Predicted;
+			  });
 
-			// Bar labels
-			var labelsContainer = chart.append('g')
-				.attr('transform', 'translate(' + (barLabelWidth - barLabelPadding) + ',' + (gridLabelHeight + gridChartOffset) + ')'); 
-			
-			labelsContainer.selectAll('text')
-				.data(sortedData)
-				.enter()
-			  .append('text')
-				.attr('y', yText)
-				.attr('stroke', 'none')
-				.attr('fill', 'black')
-				.attr("dy", ".35em") // vertical-align: middle
-				.attr('text-anchor', 'end')
-				.attr("class", "name")
-				.text(barLabel);
+			  x.domain(d3.extent(data, function(d) { return d.Predicted; })).nice();
+			  y.domain(d3.extent(data, function(d) { return d.Actual; })).nice();
 
-			// Background bars
-			var barsBG = chart.append('g')
-				.attr('transform', 'translate(' + barLabelWidth + ',' + (gridLabelHeight + gridChartOffset) + ')'); 
-			
-			barsBG.selectAll("rect")
-				.data(sortedData)
-				.enter()
-			  .append("rect")
-				.attr('y', y)
-				.attr('height', yScale.rangeBand())
-				.attr('width', function(d) { return x(barValue(d)); })
-				.attr("class", "bar-bg");
+			var slopeRadians =  Math.atan2(height - y(50), x(50)),
+					slopeDegrees = (slopeRadians * 180 / Math.PI);
 
-			// Bars
-			var barsContainer = chart.append('g')
-				.attr('transform', 'translate(' + barLabelWidth + ',' + (gridLabelHeight + gridChartOffset) + ')'); 
-			
-			barsContainer.selectAll("rect")
-				.data(sortedData)
-				.enter()
-			  .append("rect")
-				.attr('y', yPad)
-				.attr('height', yScale.rangeBand() - barPadding)
-				.attr('width', function(d) { return x(barValue(d)); })
-				.attr("class", "bar")
-				.on("mouseover", function(d) {      
+			// X-axis
+			svg.append("g")
+				  .attr("class", "x axis")
+				  .attr("transform", "translate(0," + height + ")")
+				  .call(xAxis)
+				.append("text")
+				  .attr("class", "axis-label")
+				  .attr("x", width - margin.left - margin.right)
+				  .attr("y", -6)
+				  .style("text-anchor", "end")
+				  .text("Total Predicted Medals, '06 and '10");
+
+			// Y-axis
+			svg.append("g")
+				  .attr("class", "y axis")
+				  .call(yAxis)
+				.append("text")
+				  .attr("class", "axis-label")
+				  .attr("transform", "rotate(-90)")
+				  .attr("y", 6)
+				  .attr("dy", ".71em")
+				  .style("text-anchor", "end")
+				  .text("Total Actual Medals, '06 and '10")
+
+			// Model
+			var model = svg.append("g")
+					.attr("class", "model-line-container");
+
+			var modelLine = model.append("line")
+				  .attr("class", "model-line")
+				  .attr("x1", x(0))
+				  .attr("x2", x(100))
+				  .attr("y1", y(0))
+				  .attr("y2", y(100));
+
+			var modelOver = model.append("text")
+		    .attr("class", "model-line-label over")
+		    .attr("text-anchor", "middle")
+				.attr("x", x(0))
+		    .attr("y", y(0))
+		    .attr("transform", "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(60)+", -7)")
+		    .text("Beat Expectations ▲");
+
+	    var modelUnder = model.append("text")
+		    .attr("class", "model-line-label under")
+		    .attr("text-anchor", "middle")
+				.attr("x", x(0))
+		    .attr("y", y(0))
+		    .attr("transform", "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(60)+", 15)")
+		    .text("Wow So Shame ▼");
+
+
+			// Points
+			var dotContainer = svg.selectAll("g .dot-container")
+				  .data(data)
+					.enter()
+				.append("g")
+					.attr("class", function(d) {          
+						if (d.Predicted <= d.Actual) {return "dot-container over"}
+						else { return "dot-container under" };        
+				  })
+					.attr("transform", function(d) { return "translate(" + x(d.Predicted) + "," + y(d.Actual) + ")"; });
+					
+			dotContainer.on("mouseover", function(d) { 
+		  		// Dot transition   
+				  d3.select(this).select(".dot").transition()        
+							.duration(200)      
+							.attr("r", 6) 
+
+					// Magnitude transition
+					d3.select(this).select(".magnitude").transition()
+							.duration(200)
+							.attr("y1", "0")
+
+					// Label transition
+					d3.select(this).select(".dot-label").transition()
+							.duration(200)
+							.style("opacity", 0); 
+
+					// Tooltip transition
 					div.transition()        
-					.duration(200)      
-					.style("opacity", 1);      
+							.duration(200)      
+							.style("opacity", 1);      
 					div .html(
-						"<span class='tootltip-title'>"+ barLabel(d) +"</span><br/>" +
-						"<span class='tooltip-param'>Geographic Area: "+ barGeo(d) +" km<sup>2</sup></span><br/>" +
-						"<span class='tooltip-param'>GDP per Capita: "+ barGDP(d) +"</span><br/>" +
-						"<span class='tooltip-param'>Exports: "+ barExport(d) +"</span><br/>" +
-						"<span class='tooltip-param'>Latitude of Capital: "+ barLat(d) + "&#176;</span>"
+							"<span class='tootltip-title'>"+ nation(d) +"</span><br/>" +
+							"<span class='tooltip-param'>Predicted: "+ predicted(d) +" medals</span><br/>" +
+							"<span class='tooltip-param'>Actual: "+ actual(d) +" medals</span>"
 					)
 					.style("left", (d3.event.pageX + 10) + "px")     
-					.style("top", (d3.event.pageY - 20) + "px");    
-				})                  
-				.on("mouseout", function(d) {       
+					.style("top", (d3.event.pageY - 20) + "px");  
+			})  
+
+			dotContainer.on("mouseout", function(d) {  
+					// Dot transition
+					d3.select(this).select(".dot").transition()        
+							.duration(500)      
+							.attr("r", 4)  
+
+					// Magnitude transition
+					magnitude.transition()
+							.duration(200)
+							.attr("y1", function(d) { return -(y(d.Actual) - y(d.Predicted)) ;} )
+
+					// Label transition
+					d3.select(this).select(".dot-label").transition()
+							.duration(200)
+							.style("opacity", 1); 
+
+					// Tooltip transition    
 					div.transition()        
-					.duration(500)      
-					.style("opacity", 0);   
-				});
+							.duration(500)      
+							.style("opacity", 0);   
+			})
 
-			// Bar value labels
-			labels = barsContainer.selectAll("text")
-				.data(sortedData)
-				.enter()
-			  .append("text")
-				.attr("x", function(d) { return x(barValue(d)); })
-				.attr("y", yText)
-				.attr("dx", 3) // padding-left
-				.attr("dy", ".35em") // vertical-align: middle
-				.attr("text-anchor", "start") // text-align: right
-				.attr("fill", "black")
-				.attr("stroke", "none")
-				.attr("class", "value-labels")
-				.text(function(d) { return d3.round(barValue(d), 2); });
 
-			// X-axis label
-			axisLabel = chart.append('text')
-				.attr('transform', 'translate(' + ((width-100)/2 + 80) + ',' + gridLabelHeight + ')') 
-				.attr("dy", -3)
-				.attr("text-anchor", "middle")
-				.attr("class", "x-axis-label")
-				.text("Predicted Medals");
+			var magnitude = dotContainer.append("line")
+					.attr("class", "magnitude")
+					.attr("x1", "0")
+				  .attr("x2", "0")
+				  .attr("y1", function(d) { return -(y(d.Actual) - y(d.Predicted)) ;} )
+				  .attr("y2", function(d) { return -(y(d.Actual) - y(d.Predicted)) ;} );
+
+			var dot = dotContainer.append("circle")
+				  .attr("r", 4)
+				  .attr("class", "dot")
+
+			var dotLabels = dotContainer.append("text")
+					.attr("dy", "-.7em")
+					.attr("class", "dot-label")
+					.text(function(d) { 
+						if (["United States","Russia","China","South Korea","United Kingdom","Germany","Austria"].indexOf(d.Nation) > -1) { return d.Nation; } 
+
+					});
+
 
 			// Tooltipz
 			var div = d3.select("body").append("div")   
 				.attr("class", "tooltip")               
 				.style("opacity", 0);
-		});
 
 
-		// Resize
-		d3.select(window).on('resize', resize);
-
-
-		// Helper Functions		 
-		function resize() {
-
-			// Update width
-			width = parseInt(d3.select('#chart').style('width'), 10);
-
-			// Resize the chart
-			x.range([0, width - barLabelWidth - valueLabelWidth]);
-			d3.select(chart.node().parentNode)
-			chart.style('width', width);
-
-			// Resize the bars
-			chart.selectAll('rect')
-			.attr('width', function(d) {
-				return x(barValue(d));
 			});
-
-			// Update value position
-			labels.attr("x", function(d) {
-				return x(d.adj_medals);
-			})
-
-			// Update x-axis label position
-			axisLabel.attr('transform', 'translate(' + ((width-100)/2 + 80) + ',' + gridLabelHeight + ')');
-
-		}
 
 	</script>
 
 </article>
-
 </body>
-
 </html>
+
+
