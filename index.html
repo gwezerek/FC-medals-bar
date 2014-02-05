@@ -30,39 +30,53 @@
 		<!-- D3 LAYOUT -->
 		<script type="text/javascript">
 
+			// Config
+			var dotRadius = 5;
+			var bigDotRadius = 8;
+			var margin = {top: 20, right: 20, bottom: 30, left: 40};
+			var width = parseInt(d3.select('#chart').style('width'), 10);
+			var height = 480 - margin.top - margin.bottom;
+
 			// Accessor functions 
 			var nation = function(d) { return d['Nation']; };
 			var predicted = function(d) { return d['Predicted']; };
 			var actual = function(d) { return d['Actual']; };
+			var difference = function(d) { return d['Diff']; };
 
-			var margin = {top: 20, right: 20, bottom: 30, left: 40},
-				width = parseInt(d3.select('#chart').style('width'), 10),
-				height = 480 - margin.top - margin.bottom;
-
+			
+			// Scale
 			var x = d3.scale.linear()
 				.range([0, width - margin.left - margin.right]);
 
 			var y = d3.scale.linear()
 				.range([height, 0]);
 
-			var color = d3.scale.category10();
+			// Axes
+			function make_x_axis() {        
+			    return d3.svg.axis()
+			        .scale(x)
+			        .orient("bottom")
+			        .ticks(6)
+			}
 
-			var xAxis = d3.svg.axis()
-				.scale(x)
-				.ticks(5)
-				.orient("bottom");
+			function make_y_axis() {        
+			    return d3.svg.axis()
+			        .scale(y)
+			        .orient("left")
+			        .ticks(6)
+			}
 
-			var yAxis = d3.svg.axis()
-				.scale(y)
-				.ticks(5)
-				.orient("left");
 
+
+			// Chart
 			var svg = d3.select("#chart").append("svg")
 				.attr("width", width)
 				.attr("height", height + margin.top + margin.bottom)
 			  .append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
+			// DAT DATA
 			d3.tsv("outliers.tsv", function(error, data) {
 			  data.forEach(function(d) {
 				d.Actual = +d.Actual;
@@ -72,14 +86,34 @@
 			  x.domain(d3.extent(data, function(d) { return d.Predicted; })).nice();
 			  y.domain(d3.extent(data, function(d) { return d.Actual; })).nice();
 
+
+			// Slope
 			var slopeRadians =  Math.atan2(height - y(50), x(50)),
 					slopeDegrees = (slopeRadians * 180 / Math.PI);
+
+
+			// Gridlines
+			var xGrid = svg.append("g")         
+        .attr("class", "grid")
+        .attr("transform", "translate(0," + height + ")")
+        .call(make_x_axis()
+            .tickSize(-height, 0, 0)
+            .tickFormat("")
+        )
+
+	    var yGrid = svg.append("g")         
+	        .attr("class", "grid")
+	        .call(make_y_axis()
+	            .tickSize(-width + margin.left + margin.right, 0, 0)
+	            .tickFormat("")
+	        )
+
 
 			// X-axis
 			svg.append("g")
 				  .attr("class", "x axis")
 				  .attr("transform", "translate(0," + height + ")")
-				  .call(xAxis)
+				  .call(make_x_axis())
 				.append("text")
 				  .attr("class", "axis-label")
 				  .attr("x", width - margin.left - margin.right)
@@ -90,41 +124,53 @@
 			// Y-axis
 			svg.append("g")
 				  .attr("class", "y axis")
-				  .call(yAxis)
+				  .call(make_y_axis())
 				.append("text")
 				  .attr("class", "axis-label")
 				  .attr("transform", "rotate(-90)")
-				  .attr("y", 6)
+				  .attr("y", bigDotRadius)
 				  .attr("dy", ".71em")
 				  .style("text-anchor", "end")
 				  .text("Total Actual Medals, '06 and '10")
+
+
+
+
+
 
 			// Model
 			var model = svg.append("g")
 					.attr("class", "model-line-container");
 
 			var modelLine = model.append("line")
-				  .attr("class", "model-line")
-				  .attr("x1", x(0))
-				  .attr("x2", x(100))
-				  .attr("y1", y(0))
-				  .attr("y2", y(100));
+				.attr({
+				  "class" : "model-line",
+				  "x1" : x(0),
+				  "x2" : x(55),
+				  "y1" : y(0),
+				  "y2" : y(55)
+			  })
 
 			var modelOver = model.append("text")
-		    .attr("class", "model-line-label over")
-		    .attr("text-anchor", "middle")
-				.attr("x", x(0))
-		    .attr("y", y(0))
-		    .attr("transform", "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(60)+", -7)")
+				.attr({
+					"class" : "model-line-label over",
+			    "text-anchor" : "middle",
+					"x" : x(0),
+			    "y" : y(0),
+			    "transform" : "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(60)+", -7)"
+				})
 		    .text("Beat Expectations ▲");
 
 	    var modelUnder = model.append("text")
-		    .attr("class", "model-line-label under")
-		    .attr("text-anchor", "middle")
-				.attr("x", x(0))
-		    .attr("y", y(0))
-		    .attr("transform", "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(60)+", 15)")
+		    .attr({
+		    	"class" : "model-line-label under",
+		    	"text-anchor" : "middle",
+		    	"x" : x(0),
+		    	"y" : y(0),
+		    	"transform" : "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(60)+", 15)"
+		    })
 		    .text("Wow So Shame ▼");
+
 
 
 			// Points
@@ -142,7 +188,7 @@
 		  		// Dot transition   
 				  d3.select(this).select(".dot").transition()        
 							.duration(200)      
-							.attr("r", 6) 
+							.attr("r", bigDotRadius) 
 
 					// Magnitude transition
 					d3.select(this).select(".magnitude").transition()
@@ -160,6 +206,7 @@
 							.style("opacity", 1);      
 					div .html(
 							"<span class='tootltip-title'>"+ nation(d) +"</span><br/>" +
+							"<span class='tooltip-param'>"+ difference(d) +" medal diff.</span><br/>" +
 							"<span class='tooltip-param'>Predicted: "+ predicted(d) +" medals</span><br/>" +
 							"<span class='tooltip-param'>Actual: "+ actual(d) +" medals</span>"
 					)
@@ -171,7 +218,7 @@
 					// Dot transition
 					d3.select(this).select(".dot").transition()        
 							.duration(500)      
-							.attr("r", 4)  
+							.attr("r", dotRadius)  
 
 					// Magnitude transition
 					magnitude.transition()
@@ -198,7 +245,7 @@
 				  .attr("y2", function(d) { return -(y(d.Actual) - y(d.Predicted)) ;} );
 
 			var dot = dotContainer.append("circle")
-				  .attr("r", 4)
+				  .attr("r", dotRadius)
 				  .attr("class", "dot")
 
 			var dotLabels = dotContainer.append("text")

@@ -90,6 +90,11 @@
 	}
 }
 
+.grid .tick {
+    stroke: $light-gray;
+    stroke-dasharray: 5,5;
+}
+
 .axis-label {
 	font-size: 11px;
 	fill: $med-gray;
@@ -182,6 +187,7 @@
 	text-anchor: middle;
 	font-size: 10px;
 	fill: $med-gray;
+	cursor: default;
 }
 
 
