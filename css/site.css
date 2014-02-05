@@ -298,77 +298,7 @@
   }
 }
 
-/* line 68, ../sass/site.scss */
-.bar-chart {
-  margin-top: 10px;
-}
-
-/* line 72, ../sass/site.scss */
-.bar-bg {
-  fill: floralwhite;
-}
-
-/* line 76, ../sass/site.scss */
-.bar {
-  fill: #ff81a0;
-  shape-rendering: crispEdges;
-}
-
-/* line 81, ../sass/site.scss */
-.name {
-  font-weight: 500;
-  font-size: 12px;
-}
-
-/* line 86, ../sass/site.scss */
-.value-labels {
-  font-size: 11px;
-}
-@media (min-width: 680px) {
-  /* line 86, ../sass/site.scss */
-  .value-labels {
-    font-size: 12px;
-  }
-}
-
-/* line 93, ../sass/site.scss */
-.grid .tick {
-  stroke: #ededed;
-  stroke-dasharray: 5,5;
-}
-
-/* line 98, ../sass/site.scss */
-.axis-label {
-  font-size: 11px;
-  fill: #999999;
-}
-@media (min-width: 680px) {
-  /* line 98, ../sass/site.scss */
-  .axis-label {
-    font-size: 12px;
-  }
-}
-
-/* line 106, ../sass/site.scss */
-.tick text {
-  font-size: 11px;
-  fill: #999999;
-}
-@media (min-width: 680px) {
-  /* line 106, ../sass/site.scss */
-  .tick text {
-    font-size: 12px;
-  }
-}
-
-/* line 114, ../sass/site.scss */
-.domain {
-  fill: none;
-  stroke: #999999;
-  stroke-width: 1;
-}
-
-/* line 120, ../sass/site.scss */
+/* line 63, ../sass/site.scss */
 .sources-copy {
   display: block;
   margin-bottom: 5px;
@@ -380,13 +310,50 @@
   line-height: 130%;
 }
 @media (min-width: 400px) {
-  /* line 120, ../sass/site.scss */
+  /* line 63, ../sass/site.scss */
   .sources-copy {
     font-size: 12px;
   }
 }
 
-/* line 134, ../sass/site.scss */
+/* line 82, ../sass/site.scss */
+.grid .tick {
+  stroke: #ededed;
+  stroke-dasharray: 5,5;
+}
+
+/* line 87, ../sass/site.scss */
+.axis-label {
+  font-size: 11px;
+  fill: #999999;
+}
+@media (min-width: 680px) {
+  /* line 87, ../sass/site.scss */
+  .axis-label {
+    font-size: 12px;
+  }
+}
+
+/* line 95, ../sass/site.scss */
+.tick text {
+  font-size: 11px;
+  fill: #999999;
+}
+@media (min-width: 680px) {
+  /* line 95, ../sass/site.scss */
+  .tick text {
+    font-size: 12px;
+  }
+}
+
+/* line 103, ../sass/site.scss */
+.domain {
+  fill: none;
+  stroke: #999999;
+  stroke-width: 1;
+}
+
+/* line 109, ../sass/site.scss */
 .tooltip {
   position: absolute;
   font-family: "MuseoSans", Helvetica, Arial, sans-serif;
@@ -398,12 +365,12 @@
   font-weight: 300;
 }
 
-/* line 145, ../sass/site.scss */
+/* line 120, ../sass/site.scss */
 .tooltip-param {
   color: #999999;
 }
 
-/* line 149, ../sass/site.scss */
+/* line 124, ../sass/site.scss */
 .model-line {
   stroke: #999999;
   stroke-width: 1;
@@ -411,47 +378,47 @@
   stroke-dasharray: 5,5;
 }
 
-/* line 156, ../sass/site.scss */
+/* line 131, ../sass/site.scss */
 .model-line-label {
   font-size: 11px;
 }
 @media (min-width: 680px) {
-  /* line 156, ../sass/site.scss */
+  /* line 131, ../sass/site.scss */
   .model-line-label {
     font-size: 12px;
   }
 }
 
-/* line 163, ../sass/site.scss */
+/* line 138, ../sass/site.scss */
 .dot {
   stroke: floralwhite;
 }
 
-/* line 167, ../sass/site.scss */
+/* line 142, ../sass/site.scss */
 .magnitude {
   stroke-width: 2;
   fill: none;
 }
 
-/* line 172, ../sass/site.scss */
+/* line 147, ../sass/site.scss */
 .over {
   fill: #ff81a0;
 }
-/* line 174, ../sass/site.scss */
+/* line 149, ../sass/site.scss */
 .over line {
   stroke: #ff81a0;
 }
 
-/* line 179, ../sass/site.scss */
+/* line 154, ../sass/site.scss */
 .under {
   fill: #b681ff;
 }
-/* line 181, ../sass/site.scss */
+/* line 156, ../sass/site.scss */
 .under line {
   stroke: #b681ff;
 }
 
-/* line 186, ../sass/site.scss */
+/* line 161, ../sass/site.scss */
 .dot-label {
   text-anchor: middle;
   font-size: 10px;

@@ -60,35 +60,24 @@
 	}
 }
 
-
-
-
-// BAR CHART
-
-.bar-chart {
-	margin-top: 10px;
-}
-
-.bar-bg {
-	fill: $bground;
-}
-
-.bar {
-	fill: $bground-4;
-	shape-rendering: crispEdges;
-}
-
-.name {
-	font-weight: 500;
-	font-size: 12px;
-}
-
-.value-labels {
+.sources-copy {
+	display: block;
+	margin-bottom: 5px;
+	padding-top: 10px;
+	border-top: 1px solid $med-gray;
+	color: $med-gray;
+	text-align: left;
 	font-size: 11px;
-	@media (min-width: $smedium) {
-		font-size: 12px; 
+	line-height: 130%;
+	@media (min-width: $small) {
+		font-size: 12px;
 	}
 }
+
+
+
+
+// SCATTERPLOT
 
 .grid .tick {
     stroke: $light-gray;
@@ -116,20 +105,6 @@
 	stroke: $med-gray; 
 	stroke-width: 1; 
 } 
-
-.sources-copy {
-	display: block;
-	margin-bottom: 5px;
-	padding-top: 10px;
-	border-top: 1px solid $med-gray;
-	color: $med-gray;
-	text-align: left;
-	font-size: 11px;
-	line-height: 130%;
-	@media (min-width: $small) {
-		font-size: 12px;
-	}
-}
 
 .tooltip {   
 	position: absolute;           
