@@ -366,11 +366,21 @@
 }
 
 /* line 120, ../sass/site.scss */
+.tooltip-title {
+  font-weight: 500;
+}
+
+/* line 124, ../sass/site.scss */
 .tooltip-param {
   color: #999999;
 }
 
-/* line 124, ../sass/site.scss */
+/* line 128, ../sass/site.scss */
+.ital {
+  font-style: italic;
+}
+
+/* line 132, ../sass/site.scss */
 .model-line {
   stroke: #999999;
   stroke-width: 1;
@@ -378,47 +388,47 @@
   stroke-dasharray: 5,5;
 }
 
-/* line 131, ../sass/site.scss */
+/* line 139, ../sass/site.scss */
 .model-line-label {
   font-size: 11px;
 }
 @media (min-width: 680px) {
-  /* line 131, ../sass/site.scss */
+  /* line 139, ../sass/site.scss */
   .model-line-label {
     font-size: 12px;
   }
 }
 
-/* line 138, ../sass/site.scss */
+/* line 146, ../sass/site.scss */
 .dot {
   stroke: floralwhite;
 }
 
-/* line 142, ../sass/site.scss */
+/* line 150, ../sass/site.scss */
 .magnitude {
   stroke-width: 2;
   fill: none;
 }
 
-/* line 147, ../sass/site.scss */
+/* line 155, ../sass/site.scss */
 .over {
   fill: #ff81a0;
 }
-/* line 149, ../sass/site.scss */
+/* line 157, ../sass/site.scss */
 .over line {
   stroke: #ff81a0;
 }
 
-/* line 154, ../sass/site.scss */
+/* line 162, ../sass/site.scss */
 .under {
   fill: #b681ff;
 }
-/* line 156, ../sass/site.scss */
+/* line 164, ../sass/site.scss */
 .under line {
   stroke: #b681ff;
 }
 
-/* line 161, ../sass/site.scss */
+/* line 169, ../sass/site.scss */
 .dot-label {
   text-anchor: middle;
   font-size: 10px;

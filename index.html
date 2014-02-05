@@ -30,6 +30,9 @@
 		<!-- D3 LAYOUT -->
 		<script type="text/javascript">
 
+			// Globals
+			var x, labels, axisLabels;
+
 			// Config
 			var dotRadius = 5;
 			var bigDotRadius = 8;
@@ -83,13 +86,13 @@
 
 			// DAT DATA
 			d3.tsv("outliers.tsv", function(error, data) {
-			  data.forEach(function(d) {
-				d.Actual = +d.Actual;
-				d.Predicted = +d.Predicted;
-			  });
+				  data.forEach(function(d) {
+					d.Actual = +d.Actual;
+					d.Predicted = +d.Predicted;
+		  });
 
-			  x.domain([0, 65]).nice();
-			  y.domain(d3.extent(data, function(d) { return d.Actual; })).nice();
+		  x.domain([0, 65]).nice();
+		  y.domain(d3.extent(data, function(d) { return d.Actual; })).nice();
 
 
 			// Slope
@@ -115,11 +118,12 @@
 
 
 			// X-axis
-			svg.append("g")
+			var xAxisDrawn = svg.append("g")
 				  .attr("class", "x axis")
 				  .attr("transform", "translate(0," + height + ")")
 				  .call(make_x_axis())
-				.append("text")
+				
+			var xAxisLabel =	xAxisDrawn.append("text")
 				  .attr("class", "axis-label")
 				  .attr("x", width - margin.left - margin.right)
 				  .attr("y", -6)
@@ -127,7 +131,7 @@
 				  .text("Total Predicted Medals, '06 and '10");
 
 			// Y-axis
-			svg.append("g")
+			var yAxisDrawn = svg.append("g")
 				  .attr("class", "y axis")
 				  .call(make_y_axis())
 				.append("text")
@@ -207,10 +211,10 @@
 							.duration(200)      
 							.style("opacity", 1);      
 					div .html(
-							"<span class='tootltip-title'>"+ nation(d) +"</span><br/>" +
-							"<span class='tooltip-param'>"+ difference(d) +" medal diff.</span><br/>" +
+							"<span class='tooltip-title'>"+ nation(d) +"</span><br/>" +
 							"<span class='tooltip-param'>Predicted: "+ predicted(d) +" medals</span><br/>" +
-							"<span class='tooltip-param'>Actual: "+ actual(d) +" medals</span>"
+							"<span class='tooltip-param'>Actual: "+ actual(d) +" medals</span><br/>" +
+							"<span class='tooltip-param ital'>"+ difference(d) +" medal difference</span>"
 					)
 					.style("left", (d3.event.pageX + 10) + "px")     
 					.style("top", (d3.event.pageY - 20) + "px");  
@@ -238,7 +242,6 @@
 							.style("opacity", 0);   
 			})
 
-
 			var magnitude = dotContainer.append("line")
 					.attr({
 						"class" : "magnitude",
@@ -265,6 +268,84 @@
 			var div = d3.select("body").append("div")   
 				.attr("class", "tooltip")               
 				.style("opacity", 0);
+
+
+			// Resize
+			window.addEventListener("resize", debounce(function () {
+			    resize();
+			}, 250), false);
+
+
+
+			// Helper Functions	
+			function debounce(fn, wait) {
+			    var timeout;
+
+			    return function () {
+			        var context = this,              // preserve context
+			            args = arguments,            // preserve arguments
+			            later = function () {        // define a function that:
+			                timeout = null;          // * nulls the timeout (GC)
+			                fn.apply(context, args); // * calls the original fn
+			            };
+
+			        // (re)set the timer which delays the function call
+			        clearTimeout(timeout);
+			        timeout = setTimeout(later, wait);
+			    };
+			};
+
+			function resize() {
+
+					// Update width
+					width = parseInt(d3.select('#chart').style('width'), 10);
+
+					// Reset the range
+					x.range([0, width - margin.left - margin.right]);
+
+					// Update slope
+					var slopeRadians =  Math.atan2(height - y(50), x(50)),
+							slopeDegrees = (slopeRadians * 180 / Math.PI);
+
+					// Resize the chart
+					// d3.select(svg.node().parentNode)
+					svg.style('width', width);
+
+					// Redraw gridlines
+					xGrid.call(make_x_axis()
+		            .tickSize(-height, 0, 0)
+		            .tickFormat("")
+	        )
+
+	        yGrid.call(make_y_axis()
+	            .tickSize(-width + margin.left + margin.right, 0, 0)
+	            .tickFormat("")
+	        )
+
+    			// X-axis
+					xAxisDrawn.call(make_x_axis())
+						.append("text")
+						  
+					xAxisLabel.attr("x", width - margin.left - margin.right)
+
+					// Redraw the model
+    			modelLine.attr({
+					  "x2" : x(65),
+					  "y2" : y(65)
+				  })
+
+					modelOver.attr({
+				    "transform" : "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(moveModelLabels())+", -7)"
+					})
+
+			    modelUnder.attr({
+			    	"transform" : "rotate(-" + slopeDegrees + ",0," + height + "), translate("+x(moveModelLabels())+", 15)"
+			    })
+
+			    // Move the points
+					dotContainer.attr("transform", function(d) { return "translate(" + x(d.Predicted) + "," + y(d.Actual) + ")"; });
+
+			}
 
 
 			});
