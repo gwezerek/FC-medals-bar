@@ -21,8 +21,8 @@
 	<article class="graphic-article">
 		<div class="graphic-container">
 			<div id="chart"> 
-				<span class="graphic-dek">Which Countries Will Win&nbsp;Big?</span>
-				<span class="graphic-copy">According to the Graettingers' model, the United States will walk away once more with the most overall medals, though it won't come close to last year's record-setting 37 individual awards. China, which only won 11 medals in the last Winter Games, is set to double its haul. Hover over each bar to see individual values for the four parameters the Graettingers modeled.</span>
+				<span class="graphic-dek">Against All Odds</span>
+				<span class="graphic-copy">The scatterplot below shows the countries that over- or underperformed the Graettinger's model by at least three total medals during the 2006 and 2010 Olympics combined.</span>
 			</div>
 			<span class="sources-copy">SOURCES: CIA World Factbook, Wikipedia</span>
 		</div>
@@ -35,8 +35,8 @@
 
 			// Config
 			var dotRadius = 5;
-			var bigDotRadius = 8;
-			var margin = {top: 20, right: 20, bottom: 30, left: 40};
+			var bigDotRadius = 7;
+			var margin = {top: 20, right: 20, bottom: 30, left: 30};
 			var width = parseInt(d3.select('#chart').style('width'), 10);
 			var height = 480 - margin.top - margin.bottom;
 
@@ -89,32 +89,32 @@
 				  data.forEach(function(d) {
 					d.Actual = +d.Actual;
 					d.Predicted = +d.Predicted;
-		  });
+			});
 
-		  x.domain([0, 65]).nice();
-		  y.domain(d3.extent(data, function(d) { return d.Actual; })).nice();
+		  	x.domain([0, 65]).nice();
+			y.domain(d3.extent(data, function(d) { return d.Actual; })).nice();
 
 
 			// Slope
 			var slopeRadians =  Math.atan2(height - y(50), x(50)),
-					slopeDegrees = (slopeRadians * 180 / Math.PI);
+				slopeDegrees = (slopeRadians * 180 / Math.PI);
 
 
 			// Gridlines
 			var xGrid = svg.append("g")         
-        .attr("class", "grid")
-        .attr("transform", "translate(0," + height + ")")
-        .call(make_x_axis()
-            .tickSize(-height, 0, 0)
-            .tickFormat("")
-        )
-
-	    var yGrid = svg.append("g")         
 	        .attr("class", "grid")
-	        .call(make_y_axis()
-	            .tickSize(-width + margin.left + margin.right, 0, 0)
+	        .attr("transform", "translate(0," + height + ")")
+	        .call(make_x_axis()
+	            .tickSize(-height, 0, 0)
 	            .tickFormat("")
 	        )
+
+		    var yGrid = svg.append("g")         
+		        .attr("class", "grid")
+		        .call(make_y_axis()
+		            .tickSize(-width + margin.left + margin.right, 0, 0)
+		            .tickFormat("")
+		    )
 
 
 			// X-axis
@@ -181,14 +181,21 @@
 
 			// Points
 			var dotContainer = svg.selectAll("g .dot-container")
-				  .data(data)
+				 	.data(data)
 					.enter()
 				.append("g")
 					.attr("class", function(d) {          
 						if (d.Predicted <= d.Actual) {return "dot-container over"}
 						else { return "dot-container under" };        
 				  })
+					.attr("transform", function(d) { return "translate(" + x(0) + "," + y(0) + ")"; })
+
+			// Silly animate in transition
+			dotContainer.transition()
+					.delay(50)
+					.duration(600)
 					.attr("transform", function(d) { return "translate(" + x(d.Predicted) + "," + y(d.Actual) + ")"; });
+					
 					
 			dotContainer.on("mouseover", function(d) { 
 		  		// Dot transition   
@@ -258,11 +265,16 @@
 			var dotLabels = dotContainer.append("text")
 					.attr("dy", "-.7em")
 					.attr("class", "dot-label")
+					.style("opacity", "0")
 					.text(function(d) { 
 						if (["United States","Russia","China","South Korea","United Kingdom","Germany","Austria"].indexOf(d.Nation) > -1) { return d.Nation; } 
-
 					});
 
+			// Silly label transition
+			dotLabels.transition()
+					.delay(50)
+					.duration(600)
+					.style("opacity", "1")
 
 			// Tooltipz
 			var div = d3.select("body").append("div")   
